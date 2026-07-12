@@ -17,6 +17,8 @@ app.use('*', async (c, next) => {
   const allowed = (c.env.CORS_ORIGIN ?? '').split(',').map((o) => o.trim()).filter(Boolean);
   const handler = cors({
     origin: (origin) => (allowed.includes(origin) ? origin : allowed[0] ?? ''),
+    allowMethods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
+    allowHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   });
   return handler(c, next);

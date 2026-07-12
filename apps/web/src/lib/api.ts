@@ -17,6 +17,17 @@ import type {
 
 const API_URL = (import.meta.env.VITE_API_URL as string | undefined) ?? 'http://localhost:8787';
 
+// Bearer-token session storage. The SPA is served from a different origin than
+// the API, so cookies are unreliable (third-party cookie blocking); the token
+// returned by login/signup is stored here and sent as an Authorization header.
+const TOKEN_KEY = 'sqlcopilot_token';
+
+export const tokenStore = {
+  get: (): string | null => localStorage.getItem(TOKEN_KEY),
+  set: (token: string) => localStorage.setItem(TOKEN_KEY, token),
+  clear: () => localStorage.removeItem(TOKEN_KEY),
+};
+
 export class ApiError extends Error {
   constructor(
     public readonly code: string,
@@ -36,10 +47,15 @@ interface RequestOptions {
 }
 
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  const headers: Record<string, string> = {};
+  if (options.body !== undefined) headers['content-type'] = 'application/json';
+  const token = tokenStore.get();
+  if (token) headers.authorization = `Bearer ${token}`;
+
   const response = await fetch(`${API_URL}${path}`, {
     method: options.method ?? (options.body !== undefined ? 'POST' : 'GET'),
     credentials: 'include',
-    headers: options.body !== undefined ? { 'content-type': 'application/json' } : undefined,
+    headers,
     body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
   });
 
@@ -64,9 +80,9 @@ export const api = {
   // auth
   me: () => request<{ user: CurrentUser }>('/auth/me'),
   signup: (email: string, password: string) =>
-    request<{ user: CurrentUser }>('/auth/signup', { body: { email, password } }),
+    request<{ user: CurrentUser; token: string }>('/auth/signup', { body: { email, password } }),
   login: (email: string, password: string) =>
-    request<{ user: CurrentUser }>('/auth/login', { body: { email, password } }),
+    request<{ user: CurrentUser; token: string }>('/auth/login', { body: { email, password } }),
   logout: () => request<{ ok: boolean }>('/auth/logout', { method: 'POST', body: {} }),
 
   // connections

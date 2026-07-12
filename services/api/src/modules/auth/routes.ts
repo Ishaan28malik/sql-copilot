@@ -1,9 +1,9 @@
 import { loginRequestSchema, signupRequestSchema } from '@sqlcopilot/shared';
 import { Hono, type Context } from 'hono';
-import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
+import { deleteCookie, setCookie } from 'hono/cookie';
 import type { AppEnv } from '../../env';
 import { parseBody } from '../../lib/validate';
-import { requireAuth, SESSION_COOKIE } from '../../middleware/auth';
+import { readSessionToken, requireAuth, SESSION_COOKIE } from '../../middleware/auth';
 import { login, revokeSession, signup, type IssuedSession } from './service';
 
 const COOKIE_OPTIONS = {
@@ -16,8 +16,10 @@ const COOKIE_OPTIONS = {
 export const authRoutes = new Hono<AppEnv>();
 
 const respondWithSession = (c: Context<AppEnv>, session: IssuedSession) => {
+  // Set the cookie (same-origin/local dev) AND return the token in the body so
+  // the cross-origin SPA can store it and send it as a Bearer header.
   setCookie(c, SESSION_COOKIE, session.token, { ...COOKIE_OPTIONS, expires: session.expiresAt });
-  return c.json({ user: session.user });
+  return c.json({ user: session.user, token: session.token });
 };
 
 authRoutes.post('/signup', async (c) => {
@@ -34,7 +36,7 @@ authRoutes.post('/login', async (c) => {
 });
 
 authRoutes.post('/logout', async (c) => {
-  const token = getCookie(c, SESSION_COOKIE);
+  const token = readSessionToken(c);
   if (token) await revokeSession(c.var.deps.db, token);
   deleteCookie(c, SESSION_COOKIE, { path: '/' });
   return c.json({ ok: true });
