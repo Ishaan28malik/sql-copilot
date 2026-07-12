@@ -2,7 +2,10 @@ import { AppError } from '@sqlcopilot/shared';
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
-const PBKDF2_ITERATIONS = 210_000;
+// Cloudflare Workers' WebCrypto caps PBKDF2 at 100k iterations. The stored
+// hash records its own iteration count, so verification stays correct if this
+// value ever changes.
+const PBKDF2_ITERATIONS = 100_000;
 
 const toB64 = (bytes: Uint8Array): string => {
   let binary = '';

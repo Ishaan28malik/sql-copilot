@@ -13,9 +13,13 @@ export type AppDatabase = PostgresJsDatabase<typeof schema>;
  */
 export function createAppDb(databaseUrl: string): { db: AppDatabase; close: () => Promise<void> } {
   const client = postgres(databaseUrl, {
-    max: 1,
-    prepare: false, // required for Supabase transaction-mode pooling
-    connect_timeout: 10,
+    // Cloudflare's recommended Hyperdrive + postgres.js settings. Hyperdrive
+    // pools origin connections, so the driver keeps a small local pool and
+    // skips the pg_type catalog round-trip (which stalls behind pooling).
+    max: 5,
+    prepare: false,
+    fetch_types: false,
+    connect_timeout: 15,
   });
   return {
     db: drizzle(client, { schema }),

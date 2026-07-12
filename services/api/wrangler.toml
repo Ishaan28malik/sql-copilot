@@ -15,9 +15,10 @@ LOG_LEVEL = "info"
 
 # Hyperdrive binding for the app database (Supabase). Preferred over the
 # DATABASE_URL secret; see Env.HYPERDRIVE in src/env.ts.
-# [[hyperdrive]]
-# binding = "HYPERDRIVE"
-# id = "<hyperdrive-config-id>"
+[[hyperdrive]]
+binding = "HYPERDRIVE"
+id = "677418d4577d4347bd0e0ee42ee7e1f3"
+localConnectionString = "postgresql://postgres.olkzcmqdxczcwdsztdkg:Newuser%4020261@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres?sslmode=disable"
 
 # Secrets (set with `wrangler secret put <NAME>`):
 #   DATABASE_URL    - Supabase Postgres URL (use the transaction pooler, port 6543)
