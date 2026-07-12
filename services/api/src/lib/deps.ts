@@ -20,7 +20,7 @@ export interface Deps {
 
 export function createDeps(env: Env, requestId: string): { deps: Deps; close: () => Promise<void> } {
   const logger = createLogger((env.LOG_LEVEL as LogLevel | undefined) ?? 'info', { requestId });
-  const { db, close } = createAppDb(env.DATABASE_URL);
+  const { db, close } = createAppDb(env.HYPERDRIVE?.connectionString ?? env.DATABASE_URL);
   const ollama = new OllamaProvider({
     baseUrl: env.OLLAMA_URL,
     model: env.OLLAMA_MODEL ?? 'qwen2.5:7b',

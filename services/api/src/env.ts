@@ -3,6 +3,12 @@ import type { Deps } from './lib/deps';
 
 export interface Env {
   DATABASE_URL: string;
+  /**
+   * Optional Hyperdrive binding. Preferred over DATABASE_URL when present:
+   * workerd's node:tls path cannot complete TLS to some poolers (e.g.
+   * Supabase supavisor), while Hyperdrive terminates TLS on Cloudflare infra.
+   */
+  HYPERDRIVE?: { connectionString: string };
   /** base64-encoded 32-byte AES key. */
   ENCRYPTION_KEY: string;
   OLLAMA_URL: string;
