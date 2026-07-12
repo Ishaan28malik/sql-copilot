@@ -13,15 +13,18 @@ OLLAMA_EMBED_MODEL = "bge-small-en-v1.5"
 CORS_ORIGIN = "https://ishaan28malik.github.io,http://localhost:5173"
 LOG_LEVEL = "info"
 
-# Hyperdrive binding for the app database (Supabase). Preferred over the
-# DATABASE_URL secret; see Env.HYPERDRIVE in src/env.ts.
-[[hyperdrive]]
-binding = "HYPERDRIVE"
-id = "677418d4577d4347bd0e0ee42ee7e1f3"
-localConnectionString = "postgresql://postgres.olkzcmqdxczcwdsztdkg:Newuser%4020261@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres?sslmode=disable"
+# NOTE: The production API now runs on Node (Render), not Workers, because the
+# Workers runtime cannot complete a Postgres TLS handshake to arbitrary tenant
+# databases. This file is kept only as an optional Workers target for the app's
+# own database via Hyperdrive. See README "Architecture" and render.yaml.
+#
+# To use the Workers target, create a Hyperdrive config and set its id here,
+# plus a localConnectionString for `wrangler dev` — never commit a real
+# connection string (it contains the DB password). Use .dev.vars locally.
+# [[hyperdrive]]
+# binding = "HYPERDRIVE"
+# id = "<your-hyperdrive-config-id>"
+# localConnectionString = "postgresql://user:password@host:6543/postgres"
 
-# Secrets (set with `wrangler secret put <NAME>`):
-#   DATABASE_URL    - Supabase Postgres URL (use the transaction pooler, port 6543)
-#   ENCRYPTION_KEY  - base64-encoded 32-byte key for AES-256-GCM
-#   OLLAMA_URL      - http(s) endpoint of the Ollama VM
-#   SQLGLOT_URL     - (optional) SQLGlot validation microservice
+# Secrets (set with `wrangler secret put <NAME>` for the Workers target):
+#   DATABASE_URL, ENCRYPTION_KEY, HF_TOKEN, OLLAMA_URL, SQLGLOT_URL (optional)
