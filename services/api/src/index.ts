@@ -3,6 +3,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import type { ContentfulStatusCode } from 'hono/utils/http-status';
 import type { AppEnv } from './env';
+import { resolveEnv } from './env';
 import { createDeps } from './lib/deps';
 import { authRoutes } from './modules/auth/routes';
 import { benchmarkRoutes } from './modules/benchmark/routes';
@@ -14,7 +15,7 @@ import { queryRoutes } from './modules/query/routes';
 const app = new Hono<AppEnv>();
 
 app.use('*', async (c, next) => {
-  const allowed = (c.env.CORS_ORIGIN ?? '').split(',').map((o) => o.trim()).filter(Boolean);
+  const allowed = (resolveEnv(c.env).CORS_ORIGIN ?? '').split(',').map((o) => o.trim()).filter(Boolean);
   const handler = cors({
     origin: (origin) => (allowed.includes(origin) ? origin : allowed[0] ?? ''),
     allowMethods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
@@ -28,7 +29,7 @@ app.use('*', async (c, next) => {
 // is sent (waitUntil) so it never blocks the reply.
 app.use('*', async (c, next) => {
   const requestId = crypto.randomUUID();
-  const { deps, close } = createDeps(c.env, requestId);
+  const { deps, close } = createDeps(resolveEnv(c.env), requestId);
   c.set('deps', deps);
   c.set('logger', deps.logger);
   try {

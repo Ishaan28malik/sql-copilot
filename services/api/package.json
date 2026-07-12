@@ -6,10 +6,12 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
+    "start": "tsx src/server.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
   "dependencies": {
+    "@hono/node-server": "^1.13.7",
     "@sqlcopilot/ai": "workspace:*",
     "@sqlcopilot/database": "workspace:*",
     "@sqlcopilot/ingestion": "workspace:*",
@@ -20,6 +22,7 @@
     "hono": "^4.6.12",
     "node-sql-parser": "^5.3.4",
     "postgres": "^3.4.5",
+    "tsx": "^4.19.2",
     "zod": "^3.23.8"
   },
   "devDependencies": {

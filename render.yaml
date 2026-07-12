@@ -1,0 +1,31 @@
+# Render Blueprint for the SQL Copilot API (Node web service).
+# Create via Render dashboard → New → Blueprint → point at this repo.
+# The three secret env vars (sync: false) must be set in the dashboard.
+services:
+  - type: web
+    name: sqlcopilot-api
+    runtime: node
+    plan: free
+    region: singapore
+    # Build the whole pnpm workspace; the API imports sibling packages.
+    buildCommand: corepack enable && pnpm install --frozen-lockfile
+    startCommand: pnpm --filter @sqlcopilot/api start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: "22.11.0"
+      - key: CORS_ORIGIN
+        value: https://ishaan28malik.github.io
+      - key: HF_CHAT_MODEL
+        value: Qwen/Qwen2.5-7B-Instruct
+      - key: HF_EMBED_MODEL
+        value: BAAI/bge-small-en-v1.5
+      - key: LOG_LEVEL
+        value: info
+      # Set these in the Render dashboard (Environment tab):
+      - key: DATABASE_URL
+        sync: false
+      - key: ENCRYPTION_KEY
+        sync: false
+      - key: HF_TOKEN
+        sync: false

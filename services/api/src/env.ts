@@ -11,12 +11,28 @@ export interface Env {
   HYPERDRIVE?: { connectionString: string };
   /** base64-encoded 32-byte AES key. */
   ENCRYPTION_KEY: string;
-  OLLAMA_URL: string;
+  // LLM provider — HuggingFace is used when HF_TOKEN is set; otherwise Ollama.
+  HF_TOKEN?: string;
+  HF_CHAT_MODEL?: string;
+  HF_EMBED_MODEL?: string;
+  OLLAMA_URL?: string;
   OLLAMA_MODEL?: string;
   OLLAMA_EMBED_MODEL?: string;
   CORS_ORIGIN?: string;
   SQLGLOT_URL?: string;
   LOG_LEVEL?: string;
+}
+
+/**
+ * Resolves configuration from either Cloudflare Workers bindings (`c.env`) or
+ * Node's `process.env`. Bindings win when both are present (Workers), so the
+ * HYPERDRIVE object binding is preserved; on Node, everything comes from
+ * process.env and HYPERDRIVE is simply absent.
+ */
+export function resolveEnv(bindings: Partial<Env> | undefined): Env {
+  const proc =
+    (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env ?? {};
+  return { ...proc, ...(bindings ?? {}) } as Env;
 }
 
 /** Hono generic: bindings plus per-request variables. */

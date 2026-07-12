@@ -1,4 +1,9 @@
-import { Parser, type AST } from 'node-sql-parser';
+// node-sql-parser is CommonJS; a default import + destructure works under both
+// esbuild (Workers) and native Node ESM (tsx on Render).
+import NodeSqlParser from 'node-sql-parser';
+import type { AST } from 'node-sql-parser';
+
+const { Parser } = NodeSqlParser;
 
 const PARSER_OPTIONS = { database: 'PostgresQL' } as const;
 const MAX_SQL_LENGTH = 20_000;
