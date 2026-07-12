@@ -7,13 +7,17 @@ services:
     runtime: node
     plan: free
     region: singapore
-    # Build the whole pnpm workspace; the API imports sibling packages.
-    buildCommand: corepack enable && pnpm install --frozen-lockfile
+    # Install pnpm via npm (Render's bundled corepack has stale signing keys
+    # and fails on `corepack enable`). --prod skips dev-only native builds
+    # (wrangler/workerd, vite, sharp) that the Node server doesn't need.
+    buildCommand: npm install -g pnpm@11.5.2 && pnpm install --frozen-lockfile --prod
     startCommand: pnpm --filter @sqlcopilot/api start
     healthCheckPath: /health
     envVars:
       - key: NODE_VERSION
         value: "22.11.0"
+      - key: COREPACK_INTEGRITY_KEYS
+        value: "0"
       - key: CORS_ORIGIN
         value: https://ishaan28malik.github.io
       - key: HF_CHAT_MODEL
