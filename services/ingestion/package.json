@@ -1,0 +1,23 @@
+{
+  "name": "@sqlcopilot/ingestion",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "reindex": "node --experimental-strip-types src/cli.ts"
+  },
+  "dependencies": {
+    "@sqlcopilot/ai": "workspace:*",
+    "@sqlcopilot/database": "workspace:*",
+    "@sqlcopilot/shared": "workspace:*",
+    "@sqlcopilot/vector": "workspace:*",
+    "drizzle-orm": "^0.36.4"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
+}

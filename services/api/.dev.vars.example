@@ -1,0 +1,11 @@
+# Copy to .dev.vars for local `wrangler dev`.
+DATABASE_URL="postgresql://postgres.xxxx:password@aws-0-region.pooler.supabase.com:6543/postgres"
+# Generate with: openssl rand -base64 32
+ENCRYPTION_KEY=""
+OLLAMA_URL="http://localhost:11434"
+OLLAMA_MODEL="qwen2.5:7b"
+OLLAMA_EMBED_MODEL="bge-small-en-v1.5"
+CORS_ORIGIN="http://localhost:5173"
+LOG_LEVEL="debug"
+# Optional deep validation service (services/sqlglot)
+# SQLGLOT_URL="http://localhost:8000"
