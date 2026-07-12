@@ -15,7 +15,7 @@ services:
     healthCheckPath: /health
     envVars:
       - key: NODE_VERSION
-        value: "22.11.0"
+        value: "22.22.3"
       - key: COREPACK_INTEGRITY_KEYS
         value: "0"
       - key: CORS_ORIGIN
